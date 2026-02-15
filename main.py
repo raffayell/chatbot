@@ -72,7 +72,7 @@ def MessageView(msg: Message) -> ft.Row:
     )
 
 @ft.component
-def AppBar(page: ft.Page) -> ft. AppBar:
+def AppBar(page: ft.Page, set_search: callable, search: bool) -> ft. AppBar:
     icon, set_icon = ft.use_state(ft.Icons.LIGHT_MODE)
     mode, set_mode = ft.use_state(ft.ThemeMode.LIGHT)
     
@@ -86,10 +86,10 @@ def AppBar(page: ft.Page) -> ft. AppBar:
             page.theme_mode = ft.ThemeMode.LIGHT
 
     return ft.AppBar(
-                leading=ft.Icon(ft.Icons.MENU),
+                leading=ft.Icon(ft.Icons.AUTO_AWESOME),
                 title=ft.Text("CHATBOT"),
                 actions=[
-                    ft.IconButton(ft.Icons.SEARCH),
+                    ft.IconButton(ft.Icons.SEARCH, on_click=lambda e: set_search(not search)),
                     ft.IconButton(icon, on_click=icon_toggle, margin=ft.Margin.only(right=5)),
                 ],
                 bgcolor=ft.Colors.SURFACE_CONTAINER,
@@ -107,14 +107,16 @@ def AppView(page: ft.Page) -> ft.View:
                       ]
         )
     )
+    search, set_search = ft.use_state(False)
     return ft.View(
             controls=[
+                ft.SearchBar(bar_hint_text="Search...", visible=search),
                 Title(),
                 MessageForm(app.add_message),
                 ft.Divider(),
                 *[MessageView(msg) for msg in app.messages]
             ],
-        appbar=AppBar(page),
+        appbar=AppBar(page, set_search, search),
         padding=ft.Padding.all(20),
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         
